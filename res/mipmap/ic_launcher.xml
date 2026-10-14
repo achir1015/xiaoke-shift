@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 小柯機器人臉（同 XiaoKe_App icon.svg）＋右上角小月曆；Android 7 以下用這張 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp" android:viewportWidth="512" android:viewportHeight="512">
+    <path android:fillColor="#101522" android:pathData="M112,0 h288 a112,112 0 0 1 112,112 v288 a112,112 0 0 1 -112,112 h-288 a112,112 0 0 1 -112,-112 v-288 a112,112 0 0 1 112,-112z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="28" android:strokeLineCap="round" android:pathData="M120,250 a60,60 0 0 1 120,0" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="28" android:strokeLineCap="round" android:pathData="M272,250 a60,60 0 0 1 120,0" />
+    <path android:fillColor="#80FF6F91" android:pathData="M84,320 a44,22 0 1 0 88,0 a44,22 0 1 0 -88,0z" />
+    <path android:fillColor="#80FF6F91" android:pathData="M340,320 a44,22 0 1 0 88,0 a44,22 0 1 0 -88,0z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="20" android:strokeLineCap="round" android:pathData="M206,330 q50,46 100,0" />
+    <!-- 右上角小月曆：班表 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M360,52 h104 a12,12 0 0 1 12,12 v84 a12,12 0 0 1 -12,12 h-104 a12,12 0 0 1 -12,-12 v-84 a12,12 0 0 1 12,-12z" />
+    <path android:fillColor="#E53935" android:pathData="M360,52 h104 a12,12 0 0 1 12,12 v22 h-128 v-22 a12,12 0 0 1 12,-12z" />
+    <path android:fillColor="#1E88E5" android:pathData="M366,100 h22 v18 h-22z M401,100 h22 v18 h-22z M436,100 h22 v18 h-22z M366,128 h22 v18 h-22z M401,128 h22 v18 h-22z" />
+    <path android:fillColor="#FB8C00" android:pathData="M436,128 h22 v18 h-22z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="10" android:strokeLineCap="round" android:pathData="M384,40 v24 M440,40 v24" />
+</vector>
