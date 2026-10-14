@@ -52,49 +52,74 @@ final class MoreUi {
     }
 
     // ================================================================ 病房助理工作站月班表
-    static void importWard(final MainActivity a, final String profile) {
-        final Store st = a.st;
-        LinearLayout box = Ui.box(a);
-        Ui.label(box, "讀取 " + a.y() + " 年 " + a.m() + " 月（目前顯示的月份）\n匯入到：" + st.profileName(profile));
-        final Spinner cat = new Spinner(a);
-        cat.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, WardImport.LABELS));
-        cat.setSelection(Math.max(0, java.util.Arrays.asList(WardImport.CATS).indexOf(st.pref("wardCat", "assistant"))));
-        box.addView(cat);
-        String def = profile.equals(Store.ME) ? st.pref("wardName", "") : st.profileName(profile);
-        final EditText name = Ui.field(box, "姓名", def, InputType.TYPE_CLASS_TEXT);
-        final CheckBox over = Ui.check(box, "覆蓋已排的日子", true);
-        new AlertDialog.Builder(a).setTitle("匯入工作站月班表").setView(box)
-                .setPositiveButton("匯入", (d, w) -> {
-                    String c = WardImport.CATS[cat.getSelectedItemPosition()], n = name.getText().toString().trim();
-                    st.setPref("wardCat", c);
-                    if (profile.equals(Store.ME)) st.setPref("wardName", n);
-                    runImport(a, profile, c, n, over.isChecked());
-                })
-                .setNegativeButton("取消", null).show();
+    /** 每份班表各自記住上次匯入的類別與姓名（我的班表沿用舊的 key）。 */
+    private static String wardKey(String base, String profile) {
+        return profile.equals(Store.ME) ? base : base + ":" + profile;
     }
 
-    private static void runImport(final MainActivity a, final String profile, final String cat, final String name, final boolean overwrite) {
+    static void importWard(final MainActivity a, final String profile) {
+        final Store st = a.st;
         final int yy = a.y(), mm = a.m();
-        a.toast("讀取工作站班表中…");
-        new Thread(() -> {
-            try {
-                final List<WardImport.Employee> list = WardImport.fetch(cat, yy, mm);
-                a.ui.post(() -> {
-                    for (WardImport.Employee e : list)
-                        if (e.name.equals(name)) { finishImport(a, profile, e, yy, mm, overwrite); return; }
-                    final String[] names = new String[list.size()];
-                    for (int i = 0; i < names.length; i++) names[i] = list.get(i).name;
-                    if (names.length == 0) { a.toast("這個月的班表沒有人員資料"); return; }
-                    new AlertDialog.Builder(a).setTitle("找不到「" + name + "」，請選擇")
-                            .setItems(names, (d, w) -> {
-                                if (profile.equals(Store.ME)) a.st.setPref("wardName", names[w]);
-                                finishImport(a, profile, list.get(w), yy, mm, overwrite);
-                            }).show();
-                });
-            } catch (final Exception e) {
-                a.ui.post(() -> a.toast("匯入失敗：" + e.getMessage()));
-            }
-        }).start();
+        LinearLayout box = Ui.box(a);
+        Ui.label(box, "讀取 " + yy + " 年 " + mm + " 月（目前顯示的月份）\n匯入到：" + st.profileName(profile));
+        final Spinner cat = new Spinner(a);
+        cat.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, WardImport.LABELS));
+        cat.setSelection(Math.max(0, java.util.Arrays.asList(WardImport.CATS).indexOf(st.pref(wardKey("wardCat", profile), "assistant"))));
+        box.addView(cat);
+        Ui.label(box, "姓名");
+        final Spinner name = new Spinner(a);
+        box.addView(name);
+        final android.widget.TextView status = Ui.label(box, "");
+        final CheckBox over = Ui.check(box, "覆蓋已排的日子", true);
+        final List<WardImport.Employee> list = new ArrayList<>();
+
+        // 選類別 → 背景讀取該月名單 → 填入姓名下拉選單
+        final Runnable load = () -> {
+            final String c = WardImport.CATS[cat.getSelectedItemPosition()];
+            list.clear();
+            name.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, new String[]{"讀取名單中…"}));
+            status.setText("");
+            new Thread(() -> {
+                try {
+                    final List<WardImport.Employee> got = WardImport.fetch(c, yy, mm);
+                    a.ui.post(() -> {
+                        if (!c.equals(WardImport.CATS[cat.getSelectedItemPosition()])) return;   // 已切換類別
+                        list.clear();
+                        list.addAll(got);
+                        String[] names = new String[got.size()];
+                        int sel = 0;
+                        String last = st.pref(wardKey("wardName", profile), "");
+                        for (int i = 0; i < names.length; i++) {
+                            names[i] = got.get(i).name;
+                            if (names[i].equals(last) || (last.isEmpty() && names[i].equals(st.profileName(profile)))) sel = i;
+                        }
+                        if (names.length == 0) { status.setText("這個月的班表沒有人員資料"); names = new String[]{"（無）"}; }
+                        name.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, names));
+                        name.setSelection(sel);
+                    });
+                } catch (final Exception e) {
+                    a.ui.post(() -> {
+                        name.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, new String[]{"（無法讀取）"}));
+                        status.setText(e.getMessage());
+                    });
+                }
+            }).start();
+        };
+        cat.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(android.widget.AdapterView<?> p, android.view.View v, int pos, long id) { load.run(); }
+            public void onNothingSelected(android.widget.AdapterView<?> p) { }
+        });
+
+        new AlertDialog.Builder(a).setTitle("匯入工作站月班表").setView(box)
+                .setPositiveButton("匯入", (d, w) -> {
+                    int i = name.getSelectedItemPosition();
+                    if (list.isEmpty() || i < 0 || i >= list.size()) { a.toast("名單還沒讀到，請稍候再試"); return; }
+                    WardImport.Employee e = list.get(i);
+                    st.setPref(wardKey("wardCat", profile), WardImport.CATS[cat.getSelectedItemPosition()]);
+                    st.setPref(wardKey("wardName", profile), e.name);
+                    finishImport(a, profile, e, yy, mm, over.isChecked());
+                })
+                .setNegativeButton("取消", null).show();
     }
 
     private static void finishImport(MainActivity a, String profile, WardImport.Employee e, int yy, int mm, boolean overwrite) {
