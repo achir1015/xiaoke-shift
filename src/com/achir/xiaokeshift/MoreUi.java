@@ -124,6 +124,11 @@ final class MoreUi {
 
     private static void finishImport(MainActivity a, String profile, WardImport.Employee e, int yy, int mm, boolean overwrite) {
         int n = WardImport.apply(a.st, profile, e, yy, mm, overwrite);
+        // 第二～第五班表：以匯入的姓名當班表名稱（我的班表維持原名）
+        if (Store.isJob(profile) && !profile.equals(Store.ME)) {
+            a.st.renameProfile(profile, e.name);
+            a.st.save();
+        }
         a.refresh();
         a.toast("已匯入 " + e.name + " " + mm + " 月班表 " + n + " 天");
     }
