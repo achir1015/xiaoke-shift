@@ -1,5 +1,6 @@
 # 小柯班表助手（XiaoKe Shift）
-
+<img width="568" height="931" alt="image" src="https://github.com/user-attachments/assets/886bfe0d-58a5-4a74-8980-fca5bc7fd6f7" />
+https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 輪班班表 Android App。參考「班表小幫手（Shift Calendar）」的功能重新實作，另外加上：
 
 - **農民曆**：離線計算農曆、干支、節氣、建除宜忌、沖煞（移植自小柯 LX04 / ESP32 版）
