@@ -1,7 +1,7 @@
 # 小柯班表助手（XiaoKe Shift）
 <img width="568" height="931" alt="image" src="https://github.com/user-attachments/assets/886bfe0d-58a5-4a74-8980-fca5bc7fd6f7" />
+影音撥放網址
 https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
-
 ## 📲 下載安裝（Android 7.0 以上）
 
 **[⬇️ 下載 XiaoKeShift.apk（v1.1.0）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
@@ -15,7 +15,8 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 
 ## 📱 iPhone 安裝（iOS 17 以上，用 SideStore / AltStore 從 GitHub 安裝與更新）
 <img width="501" height="937" alt="image" src="https://github.com/user-attachments/assets/51140f83-bf1d-4dbe-a7d5-39436168232d" />
-Uploading 小柯班表助手iphone.mp4…
+影音撥放網址
+https://github.com/user-attachments/assets/8d87f459-3ed5-4ae3-baff-85bb0e56c393
 iPhone 不能像 Android 一樣直接點連結安裝，要透過 **SideStore**（或 AltStore）用**你自己的 Apple ID**（免費帳號即可）簽名安裝。
 每次這個 repo 的 iPhone 程式更新，GitHub 會自動編好新版放到 [Releases](https://github.com/achir1015/xiaoke-shift/releases)，SideStore 會提示更新。
 
