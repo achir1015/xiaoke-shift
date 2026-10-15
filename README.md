@@ -1,6 +1,18 @@
 # 小柯班表助手（XiaoKe Shift）
 <img width="568" height="931" alt="image" src="https://github.com/user-attachments/assets/886bfe0d-58a5-4a74-8980-fca5bc7fd6f7" />
 https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
+
+## 📲 下載安裝（Android 7.0 以上）
+
+**[⬇️ 下載 XiaoKeShift.apk（v1.1.0）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
+
+<img src="release/qr.png" width="180" alt="手機掃描下載 APK">
+
+1. 用手機開上面的連結（或掃 QR Code）下載 APK。
+2. 點下載完成的檔案 → 若出現「為了安全起見，你的手機目前無法安裝來自這個來源的應用程式」，按「設定」→ 開啟「允許來自這個來源的應用程式」→ 返回再按「安裝」。
+3. 三星手機若被 Play Protect 擋下，選「仍要安裝」。
+4. 更新新版時直接安裝覆蓋即可，班表資料會保留（建議先「⋮ → 備份班表」）。
+
 輪班班表 Android App。參考「班表小幫手（Shift Calendar）」的功能重新實作，另外加上：
 
 - **農民曆**：離線計算農曆、干支、節氣、建除宜忌、沖煞（移植自小柯 LX04 / ESP32 版）

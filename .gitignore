@@ -3,3 +3,6 @@ build/
 *.keystore
 local.properties
 *.apk
+
+# 下載安裝用的 APK（README 有連結）
+!release/XiaoKeShift.apk
