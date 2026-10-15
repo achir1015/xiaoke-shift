@@ -65,6 +65,7 @@ struct ContentView: View {
                             Button("同步到行事曆（Google）", systemImage: "calendar.badge.plus") { panel = .calendar }
                             Button("開啟行事曆", systemImage: "calendar") { CalendarSync.open(selected) }
                             Button("鬧鐘設定", systemImage: "alarm") { panel = .alarms }
+                            Button("小柯機器人連線", systemImage: "wifi") { panel = .xiaoke }
                         }
                         Section {
                             Button("統計（工時／加班／薪資）", systemImage: "chart.bar") { panel = .stats }
@@ -116,6 +117,7 @@ struct ContentView: View {
                 case .help: HelpView()
                 case .calendar: CalendarSyncView(year: shownY, month: shownM) { toast = $0; loadEvents() }
                 case .alarms: AlarmSettingsView()
+                case .xiaoke: XiaoKeConnectView()
                 }
             }
             .task(id: "\(shownY)-\(shownM)-\(eventDots)") { loadEvents() }
@@ -349,7 +351,7 @@ struct SetShiftSheet: View {
 }
 
 enum Panel: String, Identifiable {
-    case types, settings, ward, patterns, stats, notes, holidays, payday, profiles, help, calendar, alarms
+    case types, settings, ward, patterns, stats, notes, holidays, payday, profiles, help, calendar, alarms, xiaoke
     var id: String { rawValue }
 }
 

@@ -7,6 +7,7 @@ struct XiaoKeShiftApp: App {
     @Environment(\.scenePhase) private var phase
     @AppStorage("dark") private var dark = false
     @AppStorage("password") private var password = ""
+    @AppStorage("keepAwake") private var keepAwake = false
     @State private var unlocked = false
 
     var body: some Scene {
@@ -23,9 +24,15 @@ struct XiaoKeShiftApp: App {
                 Task { _ = await Alarms.schedule(store) }
             }
         }
+        .onChange(of: keepAwake) { _, on in UIApplication.shared.isIdleTimerDisabled = on }
         .onChange(of: phase) { _, p in
             if p == .background { unlocked = false; store.save() }   // 順便把設定交給小工具
-            if p == .active { Task { _ = await Alarms.schedule(store) } }
+            if p == .active {
+                Task { _ = await Alarms.schedule(store) }
+                XiaoKeServer.shared.start(store)          // 小柯機器人區網 API（前景時）
+                UIApplication.shared.isIdleTimerDisabled = keepAwake
+            }
+            if p == .background { XiaoKeServer.shared.stop() }
         }
     }
 

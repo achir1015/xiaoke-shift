@@ -152,7 +152,7 @@ struct StopAlarmIntent: LiveActivityIntent {
     }
 }
 
-/// 給小柯唸的一句話（同 Android XiaoKeServer.say）。
+/// 給小柯唸的一句話（同 Android XiaoKeServer.say），例如「今天10月14日星期三，農曆九月初三，你上白班 08:00 到 16:00。宜…」
 func sayText(_ st: Store, _ c: Day) -> String {
     let k = c.key
     let when = c == Day.today ? "今天" : c == Day.today.adding(1) ? "明天" : ""
@@ -165,7 +165,12 @@ func sayText(_ st: Store, _ c: Day) -> String {
     let note = st.note(Store.ME, k)
     if !note.isEmpty { s += "備註：\(note)。" }
     let a = Almanac.compute(c)
-    if a.ok { s += "今天\(a.dayGZ)日，宜\(a.yi)，忌\(a.ji)。" }
+    if a.ok {
+        if !a.termToday.isEmpty { s += "今天是\(a.termToday)。" }
+        let hol = Holidays.name(st, c)
+        if !hol.isEmpty { s += "是\(hol)。" }
+        s += "宜\(a.yi)，忌\(a.ji)。"
+    }
     return s
 }
 

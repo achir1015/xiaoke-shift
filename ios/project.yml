@@ -37,6 +37,9 @@ targets:
         NSCalendarsUsageDescription: 把班表寫到行事曆（可同步到 Google 行事曆），並在月曆上顯示你的行程。
         NSAlarmKitUsageDescription: 依照班別設定的時間叫你起床上班。
         NSPhotoLibraryUsageDescription: 在備註記錄插入照片。
+        NSLocalNetworkUsageDescription: 讓同一個 Wi-Fi 的小柯機器人查詢班表（App 開著時）。
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         LSApplicationQueriesSchemes:
           - comgooglemaps
         UISupportedInterfaceOrientations:
