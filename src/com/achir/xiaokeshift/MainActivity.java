@@ -551,8 +551,8 @@ public final class MainActivity extends Activity {
     void startDoc(String action, int req) {
         Intent i = new Intent(action);
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType(req == REQ_IMPORT ? "*/*" : "application/json");
-        if (req == REQ_EXPORT) i.putExtra(Intent.EXTRA_TITLE, "小柯班表備份_" + Store.key(Calendar.getInstance()) + ".json");
+        i.setType(req == REQ_IMPORT ? "*/*" : "application/zip");
+        if (req == REQ_EXPORT) i.putExtra(Intent.EXTRA_TITLE, "小柯班表備份_" + Store.key(Calendar.getInstance()) + ".zip");
         startActivityForResult(i, req);
     }
 
@@ -569,20 +569,15 @@ public final class MainActivity extends Activity {
         if (uri == null) return;
         try {
             if (req == REQ_EXPORT) {
-                try (OutputStream out = getContentResolver().openOutputStream(uri)) {
-                    out.write(st.exportAll().toString(2).getBytes("UTF-8"));
-                }
+                int n = Backup.export(this, uri);
                 st.setPref("lastBackup", Store.key(Calendar.getInstance()));
-                toast("備份成功");
+                toast("備份成功（含 " + n + " 張備註圖片）");
             } else if (req == REQ_IMPORT) {
-                StringBuilder sb = new StringBuilder();
-                try (BufferedReader r = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri), "UTF-8"))) {
-                    for (String line; (line = r.readLine()) != null; ) sb.append(line).append('\n');
-                }
-                final JSONObject o = new JSONObject(sb.toString());
-                new AlertDialog.Builder(this).setTitle("還原").setMessage("注意：現有資料會被備份資料所取代。確定要還原？")
+                final Backup.Pending p = Backup.read(this, uri);
+                new AlertDialog.Builder(this).setTitle("還原")
+                        .setMessage("備份檔含 " + p.images + " 張備註圖片。\n注意：現有資料會被備份資料所取代。確定要還原？")
                         .setPositiveButton("還原", (d, w) -> {
-                            try { st.importAll(o); refresh(); toast("還原成功"); } catch (Exception e) { toast("還原失敗：" + e.getMessage()); }
+                            try { Backup.apply(this, p); refresh(); toast("還原成功"); } catch (Exception e) { toast("還原失敗：" + e.getMessage()); }
                         }).setNegativeButton("取消", null).show();
             }
         } catch (Exception e) {
