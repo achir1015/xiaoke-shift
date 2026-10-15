@@ -69,4 +69,4 @@ print(json.dumps({
     "news": []
 }, ensure_ascii=False, indent=2))
 EOF
-echo "完成：$OUT/XiaoKeShift.ipa（$VER，$SIZE bytes）、$OUT/source.json"
+echo "完成：${OUT}/XiaoKeShift.ipa（${VER}，${SIZE} bytes）、${OUT}/source.json"
