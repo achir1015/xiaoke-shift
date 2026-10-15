@@ -13,6 +13,34 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 3. 三星手機若被 Play Protect 擋下，選「仍要安裝」。
 4. 更新新版時直接安裝覆蓋即可，班表資料會保留（建議先「⋮ → 備份班表」）。
 
+## 📱 iPhone 安裝（iOS 17 以上，用 SideStore / AltStore 從 GitHub 安裝與更新）
+
+iPhone 不能像 Android 一樣直接點連結安裝，要透過 **SideStore**（或 AltStore）用**你自己的 Apple ID**（免費帳號即可）簽名安裝。
+每次這個 repo 的 iPhone 程式更新，GitHub 會自動編好新版放到 [Releases](https://github.com/achir1015/xiaoke-shift/releases)，SideStore 會提示更新。
+
+**來源網址（複製這行）：**
+
+```
+https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
+```
+
+1. **第一次：安裝 SideStore**（需要電腦一次）— 依照官方說明 <https://docs.sidestore.io> 安裝。
+   （也可以用 AltStore：電腦裝 AltServer，<https://altstore.io>。）
+   iPhone 要開「設定 → 隱私權與安全性 → 開發者模式」。
+2. 打開 SideStore →「Sources（來源）」→ 右上 **＋** → 貼上上面的來源網址 → 加入。
+3. 在來源裡點 **小柯班表助手** → 安裝（用你的 Apple ID 簽名）。
+4. 第一次開啟若出現「未受信任的開發者」：「設定 → 一般 → VPN 與裝置管理」→ 信任你的 Apple ID。
+5. **更新**：SideStore 的「My Apps」出現新版時按「Update」，班表資料會保留（建議先「⋯ → 備份班表」）。
+
+注意：
+- 免費 Apple ID 簽的 App **7 天到期**，要在 SideStore 按「Refresh」（SideStore 可在背景自動續期）；同時最多 3 個自行安裝的 App。
+- 鬧鐘像「時鐘」App 一樣響需要 **iOS 26** 以上；較舊的 iOS 用通知提醒。
+- 也可以直接下載 IPA 自己用其他工具安裝：[⬇️ 最新版 XiaoKeShift.ipa](https://github.com/achir1015/xiaoke-shift/releases/latest/download/XiaoKeShift.ipa)
+- Android 的備份 ZIP 可以在 iPhone「⋯ → 還原班表」直接還原。
+
+有 Mac 的話也可以自己編譯安裝：`brew install xcodegen`，`cd ios && xcodegen generate && open XiaoKeShift.xcodeproj`，
+在 Signing & Capabilities 選自己的 Team（Bundle ID 衝突就改 `ios/project.yml` 的 `com.achir.xiaokeshift` 與 App Group），接上 iPhone 按 ▶︎。
+
 輪班班表 Android App。參考「班表小幫手（Shift Calendar）」的功能重新實作，另外加上：
 
 - **農民曆**：離線計算農曆、干支、節氣、建除宜忌、沖煞（移植自小柯 LX04 / ESP32 版）

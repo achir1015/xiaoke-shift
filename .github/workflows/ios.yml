@@ -1,0 +1,47 @@
+# iPhone 版：每次 push 改到 ios/ 就編出 IPA，發佈到 GitHub Releases（標籤 ios-1.0.<組建號>）。
+# Releases 附 XiaoKeShift.ipa 與 source.json；朋友在 SideStore / AltStore 加入來源
+#   https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
+# 就能安裝，之後有新版會自動提示更新。
+name: iOS IPA
+
+on:
+  push:
+    branches: [main]
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 選用最新的 Xcode 26
+        run: |
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          echo "使用 $X"
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: 安裝 XcodeGen
+        run: brew install xcodegen
+
+      - name: 編譯 IPA
+        run: ios/tools/build_ipa.sh ${{ github.run_number }}
+
+      - name: 發佈到 GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-1.0.${{ github.run_number }}
+          name: iPhone 版 1.0.${{ github.run_number }}
+          make_latest: true
+          body: |
+            小柯班表助手 iPhone 版（${{ github.sha }}）。
+            安裝方式請看 README 的「iPhone 安裝（SideStore / AltStore）」。
+            SideStore / AltStore 來源：https://github.com/${{ github.repository }}/releases/latest/download/source.json
+          files: |
+            ios/build/XiaoKeShift.ipa
+            ios/build/source.json

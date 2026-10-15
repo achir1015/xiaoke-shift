@@ -15,7 +15,14 @@ final class Store: ObservableObject {
     static let JOBS = ["me", "job2", "job3", "job4", "job5"]
     static let JOB_NAMES = ["我的班表", "第二班表", "第三班表", "第四班表", "第五班表"]
     static let APP = "小柯班表助手"
-    static let GROUP = "group.com.achir.xiaokeshift"
+    /// App Group（App 與桌面小工具共用資料）。朋友用 SideStore/AltStore 以自己的 Apple ID 重新簽名時，
+    /// 群組名稱會被改掉，新名稱寫在 Info.plist 的 ALTAppGroups（小工具則看所屬 App 的 Info.plist）。
+    static let GROUP: String = {
+        func alt(_ b: Bundle?) -> String? { (b?.object(forInfoDictionaryKey: "ALTAppGroups") as? [String])?.first }
+        let app = Bundle.main.bundleURL.pathExtension == "appex"
+            ? Bundle(url: Bundle.main.bundleURL.deletingLastPathComponent().deletingLastPathComponent()) : nil
+        return alt(Bundle.main) ?? alt(app) ?? "group.com.achir.xiaokeshift"
+    }()
     /// 給桌面小工具讀的設定（App 存檔時複製一份到 App Group）。
     static let widgetPrefs = ["firstDow", "weekendRed", "showHolidays", "hideOff", "payMode", "payDay", "payStart", "payPeriod"]
 
