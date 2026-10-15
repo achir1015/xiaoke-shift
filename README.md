@@ -41,14 +41,42 @@ https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
 有 Mac 的話也可以自己編譯安裝：`brew install xcodegen`，`cd ios && xcodegen generate && open XiaoKeShift.xcodeproj`，
 在 Signing & Capabilities 選自己的 Team（Bundle ID 衝突就改 `ios/project.yml` 的 `com.achir.xiaokeshift` 與 App Group），接上 iPhone 按 ▶︎。
 
+## 🤖 小柯機器人連線（Android／iPhone 都有）
+
+小柯機器人（ESP32 / LX04）跟手機連**同一個 Wi-Fi**，就能向小柯班表助手查班表，用語音唸給你聽。
+
+**設定步驟**
+1. 手機打開小柯班表助手 →（Android「⋮」／iPhone「⋯」選單）→「**小柯機器人連線**」，畫面會顯示手機的網址，例如 `http://192.168.1.23:8090`。
+2. 把這個網址填到小柯機器人的班表查詢設定。
+3. iPhone 第一次開啟時若跳出「要允許在區域網路上尋找裝置嗎？」→ 按「**允許**」（沒允許小柯連不進來）。
+4. 測試：iPhone 在連線頁按「測試連線」，出現 `HTTP 200：今天…` 就成功；Android 按「用瀏覽器測試」。也可以用同一個 Wi-Fi 的電腦瀏覽器打開網址看看。
+
+**API**（兩個平台格式相同，埠號 `8090`）
+
+| 網址 | 回傳 |
+| --- | --- |
+| `GET /api/say?day=today` | 一句話純文字，直接給 TTS 唸（`day` 可用 `today`、`tomorrow`、`yesterday`、`yyyy-MM-dd`） |
+| `GET /api/day?date=yyyy-MM-dd` | 當天 JSON：班別代號、名稱、上下班時間、是否休假、備註、農曆、干支、宜忌、沖煞、節氣 |
+| `GET /api/month?ym=yyyy-MM` | 整月 JSON：每天的班別、上班天數、休假天數、總工時 |
+| `GET /` | 說明頁 |
+
+`/api/say?day=today` 的回應範例：
+
+```
+今天10月23日星期五，農曆九月十四，你上白班，08:00 到 16:00。今天是霜降。宜開市、嫁娶、入學、出行，忌訴訟。
+```
+
+**注意**
+- **App 要開著**小柯才查得到。iPhone 切到背景會暫停服務，回到 App 自動恢復（iOS 限制）；連線頁可開「App 開著時螢幕不要自動關閉」。
+- 手機的 IP 可能因重新連 Wi-Fi 而改變；建議在路由器把手機設成固定 IP。
+- 只有同一個 Wi-Fi 的裝置連得到，外面網路連不進來。
+- 鬧鐘關閉後，手機上的小柯也會用語音唸出今天的班＋農民曆（設定可關）。
+
 輪班班表 Android App。參考「班表小幫手（Shift Calendar）」的功能重新實作，另外加上：
 
 - **農民曆**：離線計算農曆、干支、節氣、建除宜忌、沖煞（移植自小柯 LX04 / ESP32 版）
 - **Google 行事曆**：透過系統 CalendarContract 寫入手機上的 Google 帳號行事曆，並在 App 內顯示當天行程
-- **小柯機器人**：區網 API（App 開著時 `:8090`），鬧鐘關閉後小柯用語音唸出今天的班
-  - `GET /api/say?day=today|tomorrow|yyyy-MM-dd` → 一句話（給 TTS）
-  - `GET /api/day?date=yyyy-MM-dd` → JSON
-  - `GET /api/month?ym=yyyy-MM` → JSON
+- **小柯機器人**：區網 API（App 開著時 `:8090`），鬧鐘關閉後小柯用語音唸出今天的班（見上方「🤖 小柯機器人連線」）
 - **病房助理工作站月班表匯入**：讀 Firestore `schedules/{assistant|nurse}-YYYY-MM`，代號規則同月班表系統（D 白班、E 小夜、N 大夜、OFF/國/休 休假、例 例假）
 - **五份班表**（可改名）＋好友班表（手動或從工作站匯入同事）
 - 小柯臉圖示、「今日班表」與「月班表」兩種桌面小工具
