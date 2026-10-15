@@ -354,15 +354,15 @@ final class MoreUi {
         String[] items = new String[keys.size()];
         for (int i = 0; i < items.length; i++) {
             String k = keys.get(i);
-            items[i] = k + "　" + a.st.code(a.profile, k) + "\n" + a.st.note(a.profile, k);
+            items[i] = k + "　" + a.st.code(a.profile, k) + "　" + a.st.mood(a.profile, k) + "\n" + a.st.note(a.profile, k);
         }
-        new AlertDialog.Builder(a).setTitle("所有備註（" + a.st.profileName(a.profile) + "）").setItems(items, (d, w) -> {
+        new AlertDialog.Builder(a).setTitle("所有備註記錄（" + a.st.profileName(a.profile) + "）").setItems(items, (d, w) -> {
             Calendar c = Store.parse(keys.get(w));
             if (c == null) return;
             a.shown = (Calendar) c.clone();
             a.selected = c;
             a.refresh();
-            a.editDay(c);
+            a.startActivity(NoteActivity.intent(a, a.profile, keys.get(w)));
         }).setPositiveButton("關閉", null).show();
     }
 

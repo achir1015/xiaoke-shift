@@ -338,8 +338,17 @@ public final class MainActivity extends Activity {
 
         final EditText note = new EditText(this);
         note.setHint("備註（例如：換班、教學、會議）");
-        note.setText(st.note(profile, k));
+        note.setText(st.noteText(profile, k));
         box.addView(note);
+        final Button rich = new Button(this);
+        rich.setAllCaps(false);
+        String mood = st.mood(profile, k);
+        JSONObject no = st.noteObj(profile, k);
+        rich.setText("📝 備註記錄（心情、連結、圖片、地圖）" + (mood.isEmpty() ? "" : "　" + mood)
+                + (Store.len(no, "images") > 0 ? "　🖼️" + Store.len(no, "images") : "")
+                + (Store.len(no, "links") > 0 ? "　🔗" + Store.len(no, "links") : "")
+                + (Store.len(no, "places") > 0 ? "　📍" + Store.len(no, "places") : ""));
+        box.addView(rich);
         final EditText ot = me ? Ui.field(box, "加班（小時）", num(st.extra("ot", k)), Ui.DECIMAL) : null;
         final EditText to = me ? Ui.field(box, "借休（小時）", num(st.extra("to", k)), Ui.DECIMAL) : null;
         final EditText al = me ? Ui.field(box, "日津貼（金額）", num(st.extra("allow", k)), Ui.DECIMAL) : null;
@@ -353,7 +362,8 @@ public final class MainActivity extends Activity {
         box.addView(detail);
         mark.run();
 
-        new AlertDialog.Builder(this)
+        final AlertDialog[] dlgRef = new AlertDialog[1];
+        dlgRef[0] = new AlertDialog.Builder(this)
                 .setTitle((day.get(Calendar.MONTH) + 1) + "月" + day.get(Calendar.DAY_OF_MONTH) + "日（"
                         + XiaoKeServer.WEEK[day.get(Calendar.DAY_OF_WEEK) - 1] + "）農曆" + Almanac.lunarString(day))
                 .setView(Ui.scroll(this, box))
@@ -371,6 +381,19 @@ public final class MainActivity extends Activity {
                 })
                 .setNeutralButton("批次編輯", (d, w) -> startMulti(k))
                 .setNegativeButton("取消", null).show();
+        rich.setOnClickListener(v -> {      // 先存這個對話框的內容，再進備註記錄頁
+            st.setCode(profile, k, pick[0]);
+            st.setNote(profile, k, note.getText().toString());
+            if (me) {
+                st.setExtra("ot", k, Ui.f(ot));
+                st.setExtra("to", k, Ui.f(to));
+                st.setExtra("allow", k, Ui.f(al));
+            }
+            st.setCustomHoliday(k, hol.getText().toString());
+            st.save();
+            dlgRef[0].dismiss();
+            startActivity(NoteActivity.intent(this, profile, k));
+        });
     }
 
     static String num(float v) { return v == 0 ? "" : (v == (int) v ? String.valueOf((int) v) : String.valueOf(v)); }
@@ -470,7 +493,7 @@ public final class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         String[] items = {"批次編輯", "班別設定", "班表樣式（複製／貼上／自動重覆）", "匯入病房助理工作站月班表",
                 "同步到 Google 行事曆", "開啟 Google 日曆", "小柯機器人連線", "鬧鐘設定", "統計（工時／加班／薪資）",
-                "查看所有備註", "特殊假日", "發薪日", "班表管理（五份班表／改名／好友）", "傳送班表", "設定", "備份班表", "還原班表", "使用說明"};
+                "查看所有備註記錄", "特殊假日", "發薪日", "班表管理（五份班表／改名／好友）", "傳送班表", "設定", "備份班表", "還原班表", "使用說明"};
         for (int i = 0; i < items.length; i++) menu.add(0, i + 1, 0, items[i]);
         return true;
     }

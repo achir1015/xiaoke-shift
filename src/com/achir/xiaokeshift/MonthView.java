@@ -200,6 +200,14 @@ final class MonthView extends View {
                 cv.drawText(label, r.centerX(), r.centerY() + p.getTextSize() * 0.36f, p);
                 p.setFakeBoldText(false);
             }
+            // 心情圖示（備註記錄）
+            String mood = st.mood(profile, k);
+            if (!mood.isEmpty()) {
+                p.setTextAlign(Paint.Align.RIGHT);
+                p.setTextSize(13 * dp * sc);
+                p.setColor(Color.BLACK);
+                cv.drawText(mood, x + W - 4 * dp, y + 31 * dp * sc, p);
+            }
             // 備註紅點、發薪日 $、Google 事件藍點
             float iy = y + 25 * dp * sc, ix = x + 9 * dp;
             if (!st.note(profile, k).isEmpty()) {

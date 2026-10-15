@@ -182,11 +182,53 @@ final class Store {
         if (code == null || code.isEmpty()) d.remove(key); else put(d, key, code);
     }
 
-    synchronized String note(String profile, String key) { return section(profile, "notes").optString(key, ""); }
+    /**
+     * 備註記錄：{ text, mood, links:[{title,url}], images:[檔名], places:[{name}] }。
+     * 舊版只存字串，讀取時自動轉成 {text}。
+     */
+    synchronized JSONObject noteObj(String profile, String key) {
+        Object v = section(profile, "notes").opt(key);
+        try {
+            if (v instanceof JSONObject) return new JSONObject(v.toString());
+            JSONObject o = new JSONObject();
+            if (v != null && !v.toString().isEmpty()) o.put("text", v.toString());
+            return o;
+        } catch (Exception e) { return new JSONObject(); }
+    }
 
-    synchronized void setNote(String profile, String key, String note) {
+    static boolean noteEmpty(JSONObject o) {
+        return o.optString("text").trim().isEmpty() && o.optString("mood").isEmpty() && len(o, "links") == 0
+                && len(o, "images") == 0 && len(o, "places") == 0;
+    }
+
+    static int len(JSONObject o, String k) { JSONArray a = o.optJSONArray(k); return a == null ? 0 : a.length(); }
+
+    synchronized void setNoteObj(String profile, String key, JSONObject o) {
         JSONObject d = section(profile, "notes");
-        if (note == null || note.trim().isEmpty()) d.remove(key); else put(d, key, note.trim());
+        if (o == null || noteEmpty(o)) d.remove(key); else put(d, key, o);
+    }
+
+    /** 備註文字；沒有文字但有心情／附件時回簡短說明（讓月曆備註點、行事曆、小柯也看得到）。 */
+    synchronized String note(String profile, String key) {
+        JSONObject o = noteObj(profile, key);
+        String t = o.optString("text").trim();
+        if (!t.isEmpty() || noteEmpty(o)) return t;
+        StringBuilder s = new StringBuilder(o.optString("mood"));
+        if (len(o, "images") > 0) s.append("［圖片").append(len(o, "images")).append("］");
+        if (len(o, "links") > 0) s.append("［連結").append(len(o, "links")).append("］");
+        if (len(o, "places") > 0) s.append("［地點：").append(o.optJSONArray("places").optJSONObject(0).optString("name")).append("］");
+        return s.toString();
+    }
+
+    synchronized String noteText(String profile, String key) { return noteObj(profile, key).optString("text"); }
+
+    synchronized String mood(String profile, String key) { return noteObj(profile, key).optString("mood"); }
+
+    /** 只改文字，保留心情、連結、圖片、地點。 */
+    synchronized void setNote(String profile, String key, String note) {
+        JSONObject o = noteObj(profile, key);
+        put(o, "text", note == null ? "" : note.trim());
+        setNoteObj(profile, key, o);
     }
 
     /** 某份班表的所有備註（日期排序）。 */

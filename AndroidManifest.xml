@@ -42,6 +42,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".NoteActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".AlarmActivity"
             android:exported="false"
             android:excludeFromRecents="true"
