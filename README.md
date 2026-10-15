@@ -19,6 +19,7 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 
 影音撥放網址
 https://github.com/user-attachments/assets/8d87f459-3ed5-4ae3-baff-85bb0e56c393
+
 iPhone 不能像 Android 一樣直接點連結安裝，要透過 **SideStore**（或 AltStore）用**你自己的 Apple ID**（免費帳號即可）簽名安裝。
 每次這個 repo 的 iPhone 程式更新，GitHub 會自動編好新版放到 [Releases](https://github.com/achir1015/xiaoke-shift/releases)，SideStore 會提示更新。
 
