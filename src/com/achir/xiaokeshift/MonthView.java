@@ -12,16 +12,19 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * 月曆格子：日期、農曆／節氣／假日、班別色塊（原代號）、備註點、發薪日、Google 行事曆事件點。
  * 依設定：每週第一天、週數、今日樣式、字型大小、顯示班別時間、隱藏休假、週末紅字、深色。
- * 批次編輯模式：點選多天；長按從上一次點的日子選到這天（大範圍選取）。
+ * 按壓滑動可選一段日期（橫向滑或長按後拖曳）；批次編輯模式：點選多天、滑動加入範圍。
  */
 final class MonthView extends View {
     interface OnDayClick { void onDay(Calendar day); }
+    interface OnRange { void onRange(List<String> keys); }
 
     private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF r = new RectF();
@@ -34,8 +37,11 @@ final class MonthView extends View {
     Set<String> eventDays = new HashSet<>();
     private int fixedHeight = -1;
     private final Handler h = new Handler(Looper.getMainLooper());
-    private boolean longFired;
+    private boolean longFired, dragging;
     private float downX, downY;
+    private String downKey, dragStart;
+    private final Set<String> dragRange = new HashSet<>();
+    private OnRange rangeListener;
 
     MonthView(Context c) {
         super(c);
@@ -50,6 +56,7 @@ final class MonthView extends View {
     void setSelected(String key) { selected = key; invalidate(); }
     void setProfile(String p) { profile = p; invalidate(); }
     void setOnDayClick(OnDayClick l) { listener = l; }
+    void setOnRange(OnRange l) { rangeListener = l; }
     void setMulti(boolean on) { multi = on; picked.clear(); lastTapped = null; invalidate(); }
     boolean isMulti() { return multi; }
 
@@ -138,7 +145,7 @@ final class MonthView extends View {
 
             r.set(x + 1.5f * dp, y + 1.5f * dp, x + W - 1.5f * dp, y + H - 1.5f * dp);
             p.setStyle(Paint.Style.FILL);
-            p.setColor(picked.contains(k) ? 0xFFFFE082 : k.equals(selected) && !multi ? (dk ? 0xFF283593 : 0xFFE3F2FD) : cellBg);
+            p.setColor(picked.contains(k) || dragRange.contains(k) ? 0xFFFFE082 : k.equals(selected) && !multi ? (dk ? 0xFF283593 : 0xFFE3F2FD) : cellBg);
             cv.drawRoundRect(r, 6 * dp, 6 * dp, p);
             if (k.equals(today) && todayStyle.equals("border")) {
                 p.setStyle(Paint.Style.STROKE);
@@ -227,38 +234,84 @@ final class MonthView extends View {
         return c;
     }
 
+    // ---------------------------------------------------------------- 按壓滑動選取範圍（原版「可大範圍選擇日期來設定班表」）
     private final Runnable longPress = () -> {
         longFired = true;
         Calendar c = dayAt(downX, downY);
-        if (c == null || !multi) return;
-        String k = Store.key(c);
-        if (lastTapped == null) { picked.add(k); lastTapped = k; invalidate(); return; }
-        Calendar a = Store.parse(lastTapped.compareTo(k) < 0 ? lastTapped : k);
-        String end = lastTapped.compareTo(k) < 0 ? k : lastTapped;
-        while (a != null && Store.key(a).compareTo(end) <= 0) { picked.add(Store.key(a)); a.add(Calendar.DAY_OF_MONTH, 1); }
-        lastTapped = k;
+        if (c == null) return;
+        startDrag(Store.key(c));
+    };
+
+    private void startDrag(String k) {
+        dragging = true;
+        dragStart = k;
+        dragRange.clear();
+        dragRange.add(k);
+        if (getParent() != null) getParent().requestDisallowInterceptTouchEvent(true);   // 不讓外層捲動搶走
         performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
         invalidate();
-        if (listener != null) listener.onDay(null);
-    };
+    }
+
+    private void extendDrag(String k) {
+        String a = dragStart.compareTo(k) < 0 ? dragStart : k, b = dragStart.compareTo(k) < 0 ? k : dragStart;
+        dragRange.clear();
+        for (Calendar c = Store.parse(a); c != null && Store.key(c).compareTo(b) <= 0; c.add(Calendar.DAY_OF_MONTH, 1))
+            dragRange.add(Store.key(c));
+        invalidate();
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
                 downX = e.getX();
                 downY = e.getY();
                 longFired = false;
-                h.postDelayed(longPress, 500);
+                dragging = false;
+                Calendar c = dayAt(downX, downY);
+                downKey = c == null ? null : Store.key(c);
+                if (multi && downKey != null && getParent() != null) getParent().requestDisallowInterceptTouchEvent(true);
+                h.postDelayed(longPress, 450);
                 return true;
-            case MotionEvent.ACTION_MOVE:
-                if (Math.abs(e.getX() - downX) > 20 * dp || Math.abs(e.getY() - downY) > 20 * dp) h.removeCallbacks(longPress);
+            }
+            case MotionEvent.ACTION_MOVE: {
+                Calendar c = dayAt(e.getX(), e.getY());
+                String k = c == null ? null : Store.key(c);
+                if (!dragging) {
+                    float dx = Math.abs(e.getX() - downX), dy = Math.abs(e.getY() - downY);
+                    if (dx > 12 * dp || dy > 12 * dp) h.removeCallbacks(longPress);
+                    // 橫向滑到別格（或批次模式任意方向）就開始選範圍；直向滑則讓頁面捲動
+                    if (downKey != null && k != null && !k.equals(downKey) && (multi || dx > dy)) {
+                        startDrag(downKey);
+                        extendDrag(k);
+                    }
+                } else if (k != null) extendDrag(k);
                 return true;
+            }
             case MotionEvent.ACTION_CANCEL:
                 h.removeCallbacks(longPress);
+                dragging = false;
+                dragRange.clear();
+                invalidate();
                 return true;
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_UP: {
                 h.removeCallbacks(longPress);
+                if (dragging) {
+                    dragging = false;
+                    List<String> keys = new ArrayList<>(dragRange);
+                    java.util.Collections.sort(keys);
+                    dragRange.clear();
+                    if (multi) {
+                        picked.addAll(keys);
+                        lastTapped = keys.isEmpty() ? lastTapped : keys.get(keys.size() - 1);
+                        invalidate();
+                        if (listener != null) listener.onDay(null);
+                    } else {
+                        invalidate();
+                        if (rangeListener != null && !keys.isEmpty()) rangeListener.onRange(keys);
+                    }
+                    return true;
+                }
                 if (longFired) return true;
                 Calendar c = dayAt(e.getX(), e.getY());
                 if (c == null) return true;
@@ -271,6 +324,7 @@ final class MonthView extends View {
                     if (listener != null) listener.onDay(null);   // 通知更新選取數
                 } else if (listener != null) listener.onDay(c);
                 return true;
+            }
         }
         return true;
     }

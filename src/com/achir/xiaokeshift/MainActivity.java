@@ -132,6 +132,7 @@ public final class MainActivity extends Activity {
             refresh();
             editDay(day);
         });
+        month.setOnRange(this::setShiftFor);      // 按壓滑動選一段日期 → 一次設定班別
         root.addView(month);
 
         // 批次編輯列
@@ -415,11 +416,11 @@ public final class MainActivity extends Activity {
         if (firstKey != null) month.picked.add(firstKey);
         editBar.setVisibility(View.VISIBLE);
         updateEditInfo();
-        toast("點選多天；長按另一天可選取整段範圍");
+        toast("點選多天，或按住滑過一段日期加入選取");
     }
 
     private void updateEditInfo() {
-        editInfo.setText("批次編輯：已選 " + month.picked.size() + " 天（長按可選範圍）");
+        editInfo.setText("批次編輯：已選 " + month.picked.size() + " 天（可按住滑動選範圍）");
     }
 
     private List<String> pickedSorted() {
@@ -428,25 +429,31 @@ public final class MainActivity extends Activity {
         return l;
     }
 
+    /** 把一段日期設成同一個班別（批次編輯「設定班別」與按壓滑動選取共用）。 */
+    void setShiftFor(final List<String> keys) {
+        final AlertDialog[] dlg = new AlertDialog[1];
+        List<Button> bs = new ArrayList<>();
+        GridLayout g = shiftGrid(bs, code -> {
+            for (String k : keys) st.setCode(profile, k, code);
+            st.save();
+            if (dlg[0] != null) dlg[0].dismiss();
+            month.picked.clear();
+            updateEditInfo();
+            refresh();
+        }, () -> "", null);
+        LinearLayout box = Ui.box(this);
+        box.addView(g);
+        String range = keys.size() == 1 ? keys.get(0).substring(5) : keys.get(0).substring(5) + " ～ " + keys.get(keys.size() - 1).substring(5);
+        dlg[0] = new AlertDialog.Builder(this).setTitle("把 " + keys.size() + " 天（" + range + "）設成").setView(box)
+                .setNegativeButton("取消", null).show();
+    }
+
     private void editAction(int idx) {
         final List<String> keys = pickedSorted();
         if (idx == 3) { month.setMulti(false); editBar.setVisibility(View.GONE); refresh(); return; }
         if (keys.isEmpty()) { toast("請先選日子"); return; }
         if (idx == 0) {
-            final AlertDialog[] dlg = new AlertDialog[1];
-            List<Button> bs = new ArrayList<>();
-            GridLayout g = shiftGrid(bs, code -> {
-                for (String k : keys) st.setCode(profile, k, code);
-                st.save();
-                if (dlg[0] != null) dlg[0].dismiss();
-                month.picked.clear();
-                updateEditInfo();
-                refresh();
-            }, () -> "", null);
-            LinearLayout box = Ui.box(this);
-            box.addView(g);
-            dlg[0] = new AlertDialog.Builder(this).setTitle("把 " + keys.size() + " 天設成").setView(box)
-                    .setNegativeButton("取消", null).show();
+            setShiftFor(keys);
         } else if (idx == 1) {
             for (String k : keys) st.setCode(profile, k, "");
             st.save();
