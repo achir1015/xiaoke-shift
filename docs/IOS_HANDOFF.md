@@ -68,11 +68,23 @@
 
 ## 4. 病房助理工作站月班表匯入
 
+> **2026-10-28 更新**：月班表系統（achir1015/rcw-month）改成「公司＋部門」單位制，每個單位有自己的管理者密碼。
+> Android 版已改好（`WardImport.java` 的 `Org`／`orgs()`／`hash()`／`docId()`，`MoreUi.java` 的 `chooseOrg()`），**iPhone 版請照下面同步修改**。
+
+- **單位清單**：`GET .../documents/orgs?pageSize=300`（有 `nextPageToken` 就接著讀）。
+  每筆 `documents[].name` 最後一段是單位 ID，`fields` = `company`、`department`、`passwordHash`（都是 `stringValue`）。
+  - 原始單位 ID = `default`（臺北市立聯合醫院忠孝院區／呼吸照護病房），排第一個。清單是空的 → 顯示「月班表系統尚未建立單位，請先登入月班表網頁一次」（**不要**在 App 內寫死任何預設密碼或其雜湊）。
+  - 目前雲端有 2 個單位：`default` 呼吸照護病房、`orgmvrotww1qx73` 八東病房（之後可能再增加）。
+- **密碼**：`passwordHash` = SHA-256(`"rcw-org:" + 密碼` 的 UTF-8) 的**小寫十六進位**（Swift 用 CryptoKit `SHA256`）。比對不分大小寫。
+- **班表文件 ID**：原始單位 `schedules/{assistant|nurse}-YYYY-MM`（不變）；其他單位 `schedules/{單位ID}__{assistant|nurse}-YYYY-MM`（兩個底線）。
 - Firestore REST（免金鑰讀取）：
-  `GET https://firestore.googleapis.com/v1/projects/monthlyschedule-a5dea/databases/(default)/documents/schedules/{assistant|nurse}-YYYY-MM`
+  `GET https://firestore.googleapis.com/v1/projects/monthlyschedule-a5dea/databases/(default)/documents/schedules/<文件ID>`
 - 404 = 該月尚未建立。
 - `fields.employees.arrayValue.values[].mapValue.fields` → `name.stringValue`、`shifts.mapValue.fields["1".."31"].stringValue`。
-- UI：類別（病房助理／護理師）→ 背景讀名單 → **姓名下拉選單** → 匯入（可勾覆蓋已排的日子）。每份班表各自記住上次的類別與姓名。
+- **流程**：匯入（含「從工作站匯入同事」）前先跳「選擇單位」：公司／部門下拉＋管理者密碼＋「記住密碼」（預設勾）。
+  密碼錯 → 提示「密碼錯誤」並留在選單位畫面。通過後才進入：類別（病房助理／護理師）→ 背景讀該單位名單 → **姓名下拉選單** → 匯入（可勾覆蓋已排的日子）。匯入畫面標題下顯示「單位：公司／部門」，並有「切換單位」按鈕。
+  - 記住密碼＝把通過時的 `passwordHash` 存在設定 `orgOk:<單位ID>`；下次若雲端雜湊相同就直接進入，管理者改過密碼就會重新詢問。
+  - 每份班表記住上次的單位 `wardOrg[:profile]`、類別 `wardCat[:profile]`、姓名 `wardName[:profile]`（我的班表不加 `:profile`；同事匯入用 profile 名 `friends`）。
 - 匯入到 job2～job5 時，**班表名稱改成所選姓名**。也可勾選多位同事匯入成好友。
 - ⚠️ 該文件含其他同事的班表（個資），開發時**不要用 curl 把內容讀出來看**，請使用者在手機上驗證。
 

@@ -5,7 +5,7 @@
 https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 ## 📲 下載安裝（Android 7.0 以上）
 
-**[⬇️ 下載 XiaoKeShift.apk（v1.1.0）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
+**[⬇️ 下載 XiaoKeShift.apk（v1.2.0）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
 
 <img src="release/qr.png" width="180" alt="手機掃描下載 APK">
 
@@ -82,7 +82,7 @@ https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
 - **農民曆**：離線計算農曆、干支、節氣、建除宜忌、沖煞（移植自小柯 LX04 / ESP32 版）
 - **Google 行事曆**：透過系統 CalendarContract 寫入手機上的 Google 帳號行事曆，並在 App 內顯示當天行程
 - **小柯機器人**：區網 API（App 開著時 `:8090`），鬧鐘關閉後小柯用語音唸出今天的班（見上方「🤖 小柯機器人連線」）
-- **病房助理工作站月班表匯入**：讀 Firestore `schedules/{assistant|nurse}-YYYY-MM`，代號規則同月班表系統（D 白班、E 小夜、N 大夜、OFF/國/休 休假、例 例假）
+- **病房助理工作站月班表匯入**：先選「公司／部門」並輸入該單位的管理者密碼（與月班表系統相同），通過後才讀 Firestore 該單位的 `schedules/[單位ID__]{assistant|nurse}-YYYY-MM`，代號規則同月班表系統（D 白班、E 小夜、N 大夜、OFF/國/休 休假、例 例假）
 - **五份班表**（可改名）＋好友班表（手動或從工作站匯入同事）
 - 小柯臉圖示、「今日班表」與「月班表」兩種桌面小工具
 

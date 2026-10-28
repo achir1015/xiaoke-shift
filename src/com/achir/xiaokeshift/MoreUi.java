@@ -57,11 +57,68 @@ final class MoreUi {
         return profile.equals(Store.ME) ? base : base + ":" + profile;
     }
 
+    interface OrgThen { void on(WardImport.Org org); }
+
+    /**
+     * 先選「公司＋部門」並通過該單位管理者密碼（同月班表系統 rcw-month），才能匯入。
+     * 勾「記住密碼」時把通過時的雜湊存起來，雲端密碼沒改就不用再輸入；改了會重新詢問。
+     */
+    static void chooseOrg(final MainActivity a, final String profile, final boolean force, final OrgThen then) {
+        a.toast("讀取單位清單中…");
+        new Thread(() -> {
+            try {
+                final List<WardImport.Org> orgs = WardImport.orgs();
+                a.ui.post(() -> {
+                    String last = a.st.pref(wardKey("wardOrg", profile), a.st.pref("wardOrg", WardImport.LEGACY_ORG));
+                    if (!force)
+                        for (WardImport.Org g : orgs)
+                            if (g.id.equals(last) && !g.passwordHash.isEmpty()
+                                    && g.passwordHash.equalsIgnoreCase(a.st.pref("orgOk:" + g.id, ""))) { then.on(g); return; }
+                    orgDialog(a, profile, orgs, last, then);
+                });
+            } catch (final Exception e) {
+                a.ui.post(() -> a.toast("讀取單位清單失敗：" + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private static void orgDialog(final MainActivity a, final String profile, final List<WardImport.Org> orgs,
+                                  String last, final OrgThen then) {
+        LinearLayout box = Ui.box(a);
+        Ui.label(box, "請選擇公司／部門，並輸入該單位的管理者密碼（與月班表系統相同）");
+        final Spinner org = new Spinner(a);
+        org.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, orgs));
+        int sel = 0;
+        for (int i = 0; i < orgs.size(); i++) if (orgs.get(i).id.equals(last)) sel = i;
+        org.setSelection(sel);
+        box.addView(org);
+        final EditText pw = Ui.field(box, "管理者密碼", "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        final CheckBox remember = Ui.check(box, "記住密碼（這支手機下次不用再輸入）", true);
+        new AlertDialog.Builder(a).setTitle("選擇單位").setView(box)
+                .setPositiveButton("進入", (d, w) -> {
+                    WardImport.Org g = orgs.get(Math.max(0, org.getSelectedItemPosition()));
+                    if (g.passwordHash.isEmpty() || !WardImport.hash(pw.getText().toString()).equalsIgnoreCase(g.passwordHash)) {
+                        a.toast("密碼錯誤");
+                        orgDialog(a, profile, orgs, g.id, then);
+                        return;
+                    }
+                    a.st.setPref("orgOk:" + g.id, remember.isChecked() ? g.passwordHash : "");
+                    a.st.setPref(wardKey("wardOrg", profile), g.id);
+                    a.st.setPref("wardOrg", g.id);
+                    then.on(g);
+                })
+                .setNegativeButton("取消", null).show();
+    }
+
     static void importWard(final MainActivity a, final String profile) {
+        chooseOrg(a, profile, false, org -> importWardDialog(a, profile, org));
+    }
+
+    private static void importWardDialog(final MainActivity a, final String profile, final WardImport.Org org) {
         final Store st = a.st;
         final int yy = a.y(), mm = a.m();
         LinearLayout box = Ui.box(a);
-        Ui.label(box, "讀取 " + yy + " 年 " + mm + " 月（目前顯示的月份）\n匯入到：" + st.profileName(profile));
+        Ui.label(box, "單位：" + org.label() + "\n讀取 " + yy + " 年 " + mm + " 月（目前顯示的月份）\n匯入到：" + st.profileName(profile));
         final Spinner cat = new Spinner(a);
         cat.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_spinner_dropdown_item, WardImport.LABELS));
         cat.setSelection(Math.max(0, java.util.Arrays.asList(WardImport.CATS).indexOf(st.pref(wardKey("wardCat", profile), "assistant"))));
@@ -73,7 +130,7 @@ final class MoreUi {
         final CheckBox over = Ui.check(box, "覆蓋已排的日子", true);
         final List<WardImport.Employee> list = new ArrayList<>();
 
-        // 選類別 → 背景讀取該月名單 → 填入姓名下拉選單
+        // 選類別 → 背景讀取該單位該月名單 → 填入姓名下拉選單
         final Runnable load = () -> {
             final String c = WardImport.CATS[cat.getSelectedItemPosition()];
             list.clear();
@@ -81,7 +138,7 @@ final class MoreUi {
             status.setText("");
             new Thread(() -> {
                 try {
-                    final List<WardImport.Employee> got = WardImport.fetch(c, yy, mm);
+                    final List<WardImport.Employee> got = WardImport.fetch(org, c, yy, mm);
                     a.ui.post(() -> {
                         if (!c.equals(WardImport.CATS[cat.getSelectedItemPosition()])) return;   // 已切換類別
                         list.clear();
@@ -119,6 +176,7 @@ final class MoreUi {
                     st.setPref(wardKey("wardName", profile), e.name);
                     finishImport(a, profile, e, yy, mm, over.isChecked());
                 })
+                .setNeutralButton("切換單位", (d, w) -> chooseOrg(a, profile, true, g -> importWardDialog(a, profile, g)))
                 .setNegativeButton("取消", null).show();
     }
 
@@ -133,41 +191,43 @@ final class MoreUi {
         a.toast("已匯入 " + e.name + " " + mm + " 月班表 " + n + " 天");
     }
 
-    /** 從工作站名單挑同事，加成好友並匯入本月班表。 */
+    /** 從工作站名單挑同事，加成好友並匯入本月班表（同樣要先選單位並通過密碼）。 */
     private static void importFriendsFromWard(final MainActivity a) {
-        final String[] cats = WardImport.LABELS;
-        new AlertDialog.Builder(a).setTitle("從工作站匯入同事班表（" + a.m() + " 月）").setItems(cats, (d, w) -> {
-            final String cat = WardImport.CATS[w];
-            final int yy = a.y(), mm = a.m();
-            new Thread(() -> {
-                try {
-                    final List<WardImport.Employee> list = WardImport.fetch(cat, yy, mm);
-                    a.ui.post(() -> {
-                        final String[] names = new String[list.size()];
-                        final boolean[] on = new boolean[list.size()];
-                        for (int i = 0; i < names.length; i++) {
-                            names[i] = list.get(i).name;
-                            on[i] = a.st.friendIds().contains("f:" + names[i]);
-                        }
-                        new AlertDialog.Builder(a).setTitle("勾選要加入的好友").setMultiChoiceItems(names, on, (d2, i, c) -> on[i] = c)
-                                .setPositiveButton("匯入", (d2, w2) -> {
-                                    int n = 0;
-                                    for (int i = 0; i < names.length; i++) {
-                                        if (!on[i]) continue;
-                                        String id = a.st.addFriend(names[i]);
-                                        WardImport.apply(a.st, id, list.get(i), yy, mm, true);
-                                        n++;
-                                    }
-                                    a.st.save();
-                                    a.refresh();
-                                    a.toast("已匯入 " + n + " 位同事的班表，可在上方下拉選單切換");
-                                }).setNegativeButton("取消", null).show();
-                    });
-                } catch (final Exception e) {
-                    a.ui.post(() -> a.toast("讀取失敗：" + e.getMessage()));
-                }
-            }).start();
-        }).show();
+        chooseOrg(a, "friends", false, org -> {
+            final String[] cats = WardImport.LABELS;
+            new AlertDialog.Builder(a).setTitle(org.department + "：匯入同事班表（" + a.m() + " 月）").setItems(cats, (d, w) -> {
+                final String cat = WardImport.CATS[w];
+                final int yy = a.y(), mm = a.m();
+                new Thread(() -> {
+                    try {
+                        final List<WardImport.Employee> list = WardImport.fetch(org, cat, yy, mm);
+                        a.ui.post(() -> {
+                            final String[] names = new String[list.size()];
+                            final boolean[] on = new boolean[list.size()];
+                            for (int i = 0; i < names.length; i++) {
+                                names[i] = list.get(i).name;
+                                on[i] = a.st.friendIds().contains("f:" + names[i]);
+                            }
+                            new AlertDialog.Builder(a).setTitle("勾選要加入的好友").setMultiChoiceItems(names, on, (d2, i, c) -> on[i] = c)
+                                    .setPositiveButton("匯入", (d2, w2) -> {
+                                        int n = 0;
+                                        for (int i = 0; i < names.length; i++) {
+                                            if (!on[i]) continue;
+                                            String id = a.st.addFriend(names[i]);
+                                            WardImport.apply(a.st, id, list.get(i), yy, mm, true);
+                                            n++;
+                                        }
+                                        a.st.save();
+                                        a.refresh();
+                                        a.toast("已匯入 " + n + " 位同事的班表，可在上方下拉選單切換");
+                                    }).setNegativeButton("取消", null).show();
+                        });
+                    } catch (final Exception e) {
+                        a.ui.post(() -> a.toast("讀取失敗：" + e.getMessage()));
+                    }
+                }).start();
+            }).setNeutralButton("切換單位", (d, w) -> chooseOrg(a, "friends", true, g -> importFriendsFromWard(a))).show();
+        });
     }
 
     // ================================================================ Google 行事曆
