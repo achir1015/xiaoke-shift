@@ -5,9 +5,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BUILD="${1:-0}"
-VER="1.0.$BUILD"
+# 版本號跟 project.yml 的 MARKETING_VERSION 一致（和安裝頁、Android 同一個版號）；組建號用 GitHub Actions 的 run_number
+VER=$(grep -m1 'MARKETING_VERSION:' project.yml | sed -E 's/.*"([^"]+)".*//')
 REPO="achir1015/xiaoke-shift"
-TAG="ios-$VER"
+TAG="latest"
 OUT=build
 rm -rf "$OUT/dd" "$OUT/Payload" "$OUT/XiaoKeShift.ipa"
 mkdir -p "$OUT"
@@ -45,15 +46,15 @@ print(json.dumps({
         "bundleIdentifier": "com.achir.xiaokeshift",
         "developerName": "achir1015",
         "subtitle": "輪班班表＋農民曆＋小柯",
-        "localizedDescription": "輪班班表 App（iPhone 版）：月曆排班、農民曆、班表樣式、病房助理工作站月班表匯入、備註記錄、統計、行事曆同步、鬧鐘、桌面小工具。資料格式與 Android 版相容。",
+        "localizedDescription": "輪班班表 App（iPhone／iPad 版）：月曆排班、農民曆、班表樣式、病房助理工作站月班表匯入、備註記錄、統計、行事曆同步、鬧鐘、桌面小工具。資料格式與 Android 版相容。",
         "iconURL": icon,
         "tintColor": "#1E88E5",
         "versions": [{
             "version": ver,
             "buildVersion": build,
             "date": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "localizedDescription": f"iPhone 版 {ver}",
-            "downloadURL": f"https://github.com/{repo}/releases/download/{tag}/XiaoKeShift.ipa",
+            "localizedDescription": f"iPhone／iPad 版 {ver}（組建 {build}）",
+            "downloadURL": f"https://github.com/{repo}/releases/latest/download/XiaoKeShift.ipa",
             "size": int(size),
             "minOSVersion": "17.0"
         }],

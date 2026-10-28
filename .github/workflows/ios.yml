@@ -1,5 +1,6 @@
-# iPhone 版：每次 push 改到 ios/ 就編出 IPA，發佈到 GitHub Releases（標籤 ios-1.0.<組建號>）。
-# Releases 附 XiaoKeShift.ipa 與 source.json；朋友在 SideStore / AltStore 加入來源
+# iPhone／iPad 版：每次 push 改到 ios/ 就編出未簽名 IPA，更新到 GitHub Releases 的最新版（XiaoKeShift.ipa 與 source.json）。
+# iPad／iPhone 的 Ad Hoc 安裝檔 xiaoke-shift-ios.ipa 在 Mac 上用 ios/tools/build-adhoc-ipa.sh 建好再上傳到同一個 Release。
+# 朋友在 SideStore / AltStore 加入來源
 #   https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
 # 就能安裝，之後有新版會自動提示更新。
 name: iOS IPA
@@ -32,16 +33,12 @@ jobs:
       - name: 編譯 IPA
         run: ios/tools/build_ipa.sh ${{ github.run_number }}
 
-      - name: 發佈到 GitHub Releases
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ios-1.0.${{ github.run_number }}
-          name: iPhone 版 1.0.${{ github.run_number }}
-          make_latest: true
-          body: |
-            小柯班表助手 iPhone 版（${{ github.sha }}）。
-            安裝方式請看 README 的「iPhone 安裝（SideStore / AltStore）」。
-            SideStore / AltStore 來源：https://github.com/${{ github.repository }}/releases/latest/download/source.json
-          files: |
-            ios/build/XiaoKeShift.ipa
-            ios/build/source.json
+      # 不另外建新版本（避免搶走 Releases 的 Latest）：把 SideStore 用的未簽名 IPA＋source.json
+      # 更新到目前的最新版（和 Android APK、iPad／iPhone 安裝檔放在同一個 Release，同麻將／象棋／跳棋）。
+      - name: 更新到最新版 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh release view --repo "${{ github.repository }}" --json tagName -q .tagName)
+          echo "最新版：$TAG"
+          gh release upload "$TAG" ios/build/XiaoKeShift.ipa ios/build/source.json --clobber --repo "${{ github.repository }}"
