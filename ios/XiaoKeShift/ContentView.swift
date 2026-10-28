@@ -21,34 +21,13 @@ struct ContentView: View {
     @State private var dragging = false
     @State private var rangeKeys: RangeKeys?
 
+    @Environment(\.horizontalSizeClass) private var hSize
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 8) {
-                    profileMenu
-                    monthBar
-                    MonthGrid(year: shownY, month: shownM, profile: profile, selected: selected,
-                              multi: multi, picked: picked, eventDays: eventDays) { day in
-                        if multi {
-                            if picked.contains(day.key) { picked.remove(day.key) } else { picked.insert(day.key) }
-                        } else {
-                            selected = day
-                            editing = day
-                        }
-                    } onRange: { keys in
-                        if multi { picked.formUnion(keys) } else { rangeKeys = RangeKeys(keys: keys) }
-                    } onDragging: { dragging = $0 }
-                    if multi { batchBar }
-                    Text(dayDetail(selected))
-                        .font(.subheadline)
-                        .lineSpacing(3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemGroupedBackground)))
-                }
-                .padding(8)
+            Group {
+                if hSize == .regular { padLayout } else { phoneLayout }
             }
-            .scrollDisabled(multi)
             .background(Color(.systemGroupedBackground))
             .navigationTitle("小柯班表助手")
             .navigationBarTitleDisplayMode(.inline)
@@ -143,6 +122,63 @@ struct ContentView: View {
                 Button("好") { }
             }
         }
+    }
+
+    /// iPhone：月曆在上、說明卡在下，整頁捲動。
+    private var phoneLayout: some View {
+        ScrollView {
+            VStack(spacing: 8) {
+                profileMenu
+                monthBar
+                grid(cellH: 66)
+                if multi { batchBar }
+                detailCard(.subheadline)
+            }
+            .padding(8)
+        }
+        .scrollDisabled(multi)
+    }
+
+    /// iPad：左邊大月曆（格子依螢幕高度放大）、右邊說明卡（可單獨捲動）。
+    private var padLayout: some View {
+        GeometryReader { g in
+            HStack(alignment: .top, spacing: 14) {
+                VStack(spacing: 10) {
+                    profileMenu
+                    monthBar
+                    grid(cellH: max(80, min(190, (g.size.height - (multi ? 210 : 130)) / 6)))
+                    if multi { batchBar }
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity)
+                ScrollView { detailCard(.body) }
+                    .frame(width: min(380, g.size.width * 0.36))
+            }
+            .padding(14)
+        }
+    }
+
+    private func grid(cellH: CGFloat) -> some View {
+        MonthGrid(year: shownY, month: shownM, profile: profile, selected: selected,
+                  multi: multi, picked: picked, eventDays: eventDays, cellH: cellH) { day in
+            if multi {
+                if picked.contains(day.key) { picked.remove(day.key) } else { picked.insert(day.key) }
+            } else {
+                selected = day
+                editing = day
+            }
+        } onRange: { keys in
+            if multi { picked.formUnion(keys) } else { rangeKeys = RangeKeys(keys: keys) }
+        } onDragging: { dragging = $0 }
+    }
+
+    private func detailCard(_ font: Font) -> some View {
+        Text(dayDetail(selected))
+            .font(font)
+            .lineSpacing(3)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemGroupedBackground)))
     }
 
     private var profileMenu: some View {

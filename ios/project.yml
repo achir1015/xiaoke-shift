@@ -19,9 +19,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.achir.xiaokeshift
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone＋iPad
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: 7BN6XJ59KP   # Yu-Juh Wu (Personal Team)；換帳號就改這裡
+        DEVELOPMENT_TEAM: 7BN6XJ59KP   # Yu-Juh Wu（付費開發者帳號）；換帳號就改這裡
         GENERATE_INFOPLIST_FILE: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: XiaoKeShift/XiaoKeShift.entitlements
@@ -46,6 +46,11 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:     # iPad 四個方向都可以（也支援分割畫面）
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
   XiaoKeWidget:
     type: app-extension
     platform: iOS
@@ -59,7 +64,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.achir.xiaokeshift.widget
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone＋iPad
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 7BN6XJ59KP
         CODE_SIGN_ENTITLEMENTS: Widget/Widget.entitlements

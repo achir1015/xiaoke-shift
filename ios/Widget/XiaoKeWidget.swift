@@ -118,7 +118,7 @@ struct MonthWidget: Widget {
         StaticConfiguration(kind: "XiaoKeMonth", provider: Provider()) { _ in MonthWidgetView() }
             .configurationDisplayName("小柯月班表")
             .description("整個月的班表。")
-            .supportedFamilies([.systemLarge])
+            .supportedFamilies([.systemLarge, .systemExtraLarge])   // 特大＝iPad
     }
 }
 

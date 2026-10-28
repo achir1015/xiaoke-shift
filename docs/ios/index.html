@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小柯班表助手 iPad／iPhone 安裝</title>
+<style>
+  :root { --bg:#f1f3f6; --card:#fff; --text:#101522; --sub:#546e7a; --accent:#1e88e5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#101522; --card:#1e2433; --text:#eceff1; --sub:#90a4ae; } }
+  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.6 -apple-system, "PingFang TC", "Noto Sans TC", sans-serif; }
+  main { max-width:620px; margin:0 auto; padding:24px 16px 48px; }
+  .card { background:var(--card); border-radius:16px; padding:20px; margin:16px 0; }
+  h1 { font-size:24px; margin:8px 0; display:flex; align-items:center; gap:12px; }
+  h1 img { width:56px; height:56px; border-radius:13px; }
+  .btn { display:block; text-align:center; background:var(--accent); color:#fff; text-decoration:none; font-weight:700;
+         font-size:19px; padding:14px; border-radius:12px; }
+  ol { padding-left:22px; } li { margin:6px 0; } .sub { color:var(--sub); font-size:15px; }
+  .qr { text-align:center; } .qr img { width:200px; image-rendering:pixelated; }
+  #desk { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1><img src="https://raw.githubusercontent.com/achir1015/xiaoke-shift/main/ios/XiaoKeShift/Assets.xcassets/AppIcon.appiconset/icon-1024.png" alt="">小柯班表助手</h1>
+  <p class="sub">iPad／iPhone 版 v1.2.0（輪班班表＋農民曆＋小柯）</p>
+
+  <div class="card" id="dev">
+    <a class="btn" href="itms-services://?action=download-manifest&amp;url=https://achir1015.github.io/xiaoke-shift/ios/manifest.plist">⬇️ 安裝到這台 iPad／iPhone</a>
+    <ol>
+      <li>請用 <b>Safari</b> 開這個網頁，按上面的按鈕，再按「安裝」。</li>
+      <li>回到主畫面等圖示下載完成。</li>
+      <li>第一次開啟若說要「開發者模式」：<b>設定 → 隱私權與安全性 → 開發者模式</b> 打開（會重新開機）。</li>
+      <li>只有登記過的裝置才能安裝；新的裝置請先跟開發者登記。</li>
+      <li>更新新版：再開這頁按一次安裝即可，班表資料會保留（建議先「⋯ → 備份班表」）。</li>
+    </ol>
+  </div>
+
+  <div class="card qr" id="desk">
+    <p>請用 iPad／iPhone 的相機掃描，用 Safari 開啟安裝頁：</p>
+    <img src="qr.png" alt="安裝頁 QR Code">
+  </div>
+
+  <p class="sub">Android 版：<a href="https://github.com/achir1015/xiaoke-shift">GitHub 頁面</a> 下載 APK。原始碼與說明也在那裡。</p>
+</main>
+<script>
+  // 電腦開這頁時顯示 QR Code（iPadOS 的 Safari 會自稱 Macintosh，用觸控點判斷）
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+  if (!ios) document.getElementById('desk').style.display = 'block';
+</script>
+</body>
+</html>

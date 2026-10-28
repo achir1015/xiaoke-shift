@@ -12,6 +12,7 @@ struct MonthGrid: View {
     var picked: Set<String> = []
     var eventDays: Set<String> = []     // 行事曆有行程的日子（藍點）
     var interactive = true          // false：給截圖用（不加觸控層）
+    var cellH: CGFloat = 66         // 格子高度（iPad 用較高的格子）
     let onTap: (Day) -> Void
     var onRange: ([String]) -> Void = { _ in }
     var onDragging: (Bool) -> Void = { _ in }
@@ -20,7 +21,7 @@ struct MonthGrid: View {
     @State private var dragStart: Day?
     @State private var dragRange: Set<String> = []
 
-    private static let head: CGFloat = 18, gap: CGFloat = 3, cellH: CGFloat = 66
+    private static let head: CGFloat = 18, gap: CGFloat = 3
 
     @AppStorage("firstDow") private var firstDow = 1          // 1＝星期日、2＝星期一
     @AppStorage("weekendRed") private var weekendRed = true
@@ -62,7 +63,7 @@ struct MonthGrid: View {
                             let day = Day(year, month, d)
                             cell(day, today: today)
                         } else {
-                            Color.clear.frame(maxWidth: .infinity, minHeight: Self.cellH, maxHeight: Self.cellH)
+                            Color.clear.frame(maxWidth: .infinity, minHeight: cellH, maxHeight: cellH)
                         }
                     }
                 }
@@ -94,7 +95,7 @@ struct MonthGrid: View {
         let col = min(6, max(0, Int(p.x / (colW + Self.gap))))
         let y = p.y - Self.head - Self.gap
         if y < 0 { return nil }
-        let row = Int(y / (Self.cellH + Self.gap))
+        let row = Int(y / (cellH + Self.gap))
         let d = row * 7 + col - lead + 1
         return d >= 1 && d <= count ? Day(year, month, d) : nil
     }
@@ -163,7 +164,7 @@ struct MonthGrid: View {
         }
         .padding(.horizontal, 3)
         .padding(.vertical, 3)
-        .frame(maxWidth: .infinity, minHeight: Self.cellH, maxHeight: Self.cellH, alignment: .top)
+        .frame(maxWidth: .infinity, minHeight: cellH, maxHeight: cellH, alignment: .top)
         .background(RoundedRectangle(cornerRadius: 6)
             .fill(picked.contains(k) || dragRange.contains(k) ? Color(argb: ShiftType.argb(0xFFFFE082))
                   : day == selected && !multi ? Color.accentColor.opacity(0.18) : Color(.secondarySystemGroupedBackground)))
