@@ -14,6 +14,16 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 3. 三星手機若被 Play Protect 擋下，選「仍要安裝」。
 4. 更新新版時直接安裝覆蓋即可，班表資料會保留（建議先「⋮ → 備份班表」）。
 
+## 📱 iPad／iPhone 直接安裝（登記過的裝置）
+
+**[⬇️ 開啟安裝頁](https://achir1015.github.io/xiaoke-shift/ios/)**（請用 iPad／iPhone 的 **Safari** 開，按「安裝」）
+
+<img src="docs/ios/qr.png" width="160" alt="iPad／iPhone 掃描開啟安裝頁">
+
+- iPad 版：左邊大月曆、右邊當天說明卡，四個方向都可以，支援分割畫面；桌面可加「特大」月班表小工具。
+- 只有在開發者帳號登記過的裝置能安裝；新裝置要先登記 UDID。
+- 第一次開啟若要求「開發者模式」：設定 → 隱私權與安全性 → 開發者模式（會重新開機）。
+
 ## 📱 iPhone 安裝（iOS 17 以上，用 SideStore / AltStore 從 GitHub 安裝與更新）
 <img width="501" height="937" alt="image" src="https://github.com/user-attachments/assets/51140f83-bf1d-4dbe-a7d5-39436168232d" />
 
