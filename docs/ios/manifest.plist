@@ -18,7 +18,13 @@
 					<key>kind</key>
 					<string>display-image</string>
 					<key>url</key>
-					<string>https://raw.githubusercontent.com/achir1015/xiaoke-shift/main/ios/XiaoKeShift/Assets.xcassets/AppIcon.appiconset/icon-1024.png</string>
+					<string>https://achir1015.github.io/xiaoke-shift/ios/icon-57.png</string>
+				</dict>
+				<dict>
+					<key>kind</key>
+					<string>full-size-image</string>
+					<key>url</key>
+					<string>https://achir1015.github.io/xiaoke-shift/ios/icon-512.png</string>
 				</dict>
 			</array>
 			<key>metadata</key>
@@ -26,7 +32,7 @@
 				<key>bundle-identifier</key>
 				<string>com.achir.xiaokeshift</string>
 				<key>bundle-version</key>
-				<string>1.2.0</string>
+				<string>1.2.1</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

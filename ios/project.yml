@@ -6,8 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.2.1"
+    CURRENT_PROJECT_VERSION: "4"
 targets:
   XiaoKeShift:
     type: application
@@ -30,6 +30,8 @@ targets:
       properties:
         CFBundleDisplayName: 小柯班表
         CFBundleDevelopmentRegion: zh_TW
+        CFBundleShortVersionString: $(MARKETING_VERSION)   # App 內「檢查更新」顯示的版本
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UIFileSharingEnabled: true          # 「檔案」App 看得到 data.json
         LSSupportsOpeningDocumentsInPlace: true
@@ -73,5 +75,7 @@ targets:
       path: Widget/Info.plist
       properties:
         CFBundleDisplayName: 小柯班表
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

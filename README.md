@@ -14,24 +14,34 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 3. 三星手機若被 Play Protect 擋下，選「仍要安裝」。
 4. 更新新版時直接安裝覆蓋即可，班表資料會保留（建議先「⋮ → 備份班表」）。
 
-## 📱 iPad／iPhone 直接安裝（登記過的裝置）
+## 📱 iPad／iPhone 安裝（和小柯麻將、象棋、跳棋相同）
 
-**[⬇️ 開啟安裝頁](https://achir1015.github.io/xiaoke-shift/ios/)**（請用 iPad／iPhone 的 **Safari** 開，按「安裝」）
+| 平台 | 安裝方式 |
+| --- | --- |
+| iPad／iPhone | `xiaoke-shift-ios.ipa`：用 **Safari** 開 [安裝頁](https://achir1015.github.io/xiaoke-shift/ios/) 按「安裝到這台 iPad／iPhone」（App Store 上架前限開發者登記過的裝置；第一次要在「設定 → 隱私權與安全性」開啟「開發者模式」） |
+
+**[⬇️ 開啟安裝頁](https://achir1015.github.io/xiaoke-shift/ios/)**　電腦上可用 iPad／iPhone 相機掃：
 
 <img src="docs/ios/qr.png" width="160" alt="iPad／iPhone 掃描開啟安裝頁">
 
-- iPad 版：左邊大月曆、右邊當天說明卡，四個方向都可以，支援分割畫面；桌面可加「特大」月班表小工具。
-- 只有在開發者帳號登記過的裝置能安裝；新裝置要先登記 UDID。
-- 第一次開啟若要求「開發者模式」：設定 → 隱私權與安全性 → 開發者模式（會重新開機）。
+1. 用 Safari 開安裝頁，按藍色的「安裝到這台 iPad／iPhone」，跳出視窗再按「安裝」（不用另外的 App）。
+2. 回到主畫面，等「小柯班表」圖示的進度跑完。
+3. 第一次打開若顯示「需要開發者模式」：「設定 → 隱私權與安全性」最下面打開「開發者模式」→ 重新啟動 → 開機後按「開啟」。每台裝置只要做一次。
+4. 以後有新版本：App 右上角「⋯ → 檢查更新」會回到安裝頁，再按一次安裝即可，資料會保留（建議先「⋯ → 備份班表」）。
 
-## 📱 iPhone 安裝（iOS 17 以上，用 SideStore / AltStore 從 GitHub 安裝與更新）
+- iPad 版：左邊大月曆、右邊當天說明卡，四個方向都可以，支援分割畫面；桌面可加「特大」月班表小工具。
+- 鬧鐘像「時鐘」App 一樣響需要 **iOS 26** 以上；較舊的 iOS 用通知提醒。
+- Android 的備份 ZIP 可以在 iPad／iPhone「⋯ → 還原班表」直接還原。
+
 <img width="501" height="937" alt="image" src="https://github.com/user-attachments/assets/51140f83-bf1d-4dbe-a7d5-39436168232d" />
 
 影音撥放網址
 https://github.com/user-attachments/assets/8d87f459-3ed5-4ae3-baff-85bb0e56c393
 
-iPhone 不能像 Android 一樣直接點連結安裝，要透過 **SideStore**（或 AltStore）用**你自己的 Apple ID**（免費帳號即可）簽名安裝。
-每次這個 repo 的 iPhone 程式更新，GitHub 會自動編好新版放到 [Releases](https://github.com/achir1015/xiaoke-shift/releases)，SideStore 會提示更新。
+<details>
+<summary>其他方式：沒有登記的 iPhone 用 SideStore／AltStore（自己的 Apple ID 簽名，7 天要續簽）</summary>
+
+每次 iPhone 程式更新，GitHub 會自動編好未簽名版放到 [Releases](https://github.com/achir1015/xiaoke-shift/releases)，SideStore 會提示更新。
 
 **來源網址（複製這行）：**
 
@@ -55,6 +65,8 @@ https://github.com/achir1015/xiaoke-shift/releases/latest/download/source.json
 
 有 Mac 的話也可以自己編譯安裝：`brew install xcodegen`，`cd ios && xcodegen generate && open XiaoKeShift.xcodeproj`，
 在 Signing & Capabilities 選自己的 Team（Bundle ID 衝突就改 `ios/project.yml` 的 `com.achir.xiaokeshift` 與 App Group），接上 iPhone 按 ▶︎。
+
+</details>
 
 ## 🤖 小柯機器人連線（Android／iPhone 都有）
 

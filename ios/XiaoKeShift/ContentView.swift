@@ -22,6 +22,8 @@ struct ContentView: View {
     @State private var rangeKeys: RangeKeys?
 
     @Environment(\.horizontalSizeClass) private var hSize
+    @Environment(\.openURL) private var openURL
+    private var appVersion: String { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "" }
 
     var body: some View {
         NavigationStack {
@@ -66,6 +68,10 @@ struct ContentView: View {
                         Section {
                             Button("設定", systemImage: "gearshape") { panel = .settings }
                             Button("使用說明", systemImage: "questionmark.circle") { panel = .help }
+                            // 同麻將／象棋／跳棋：回到 GitHub Pages 安裝頁更新（資料會保留）
+                            Button("檢查更新（目前 v\(appVersion)）", systemImage: "arrow.down.circle") {
+                                if let u = URL(string: "https://achir1015.github.io/xiaoke-shift/ios/") { openURL(u) }
+                            }
                         }
                     } label: { Image(systemName: "ellipsis.circle") }
                 }
