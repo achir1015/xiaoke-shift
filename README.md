@@ -5,7 +5,7 @@
 https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 ## 📲 下載安裝（Android 7.0 以上）
 
-**[⬇️ 下載 XiaoKeShift.apk（v1.2.0）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
+**[⬇️ 下載 XiaoKeShift.apk（v1.2.1）](https://github.com/achir1015/xiaoke-shift/raw/main/release/XiaoKeShift.apk)**
 
 <img src="release/qr.png" width="180" alt="手機掃描下載 APK">
 
