@@ -106,6 +106,20 @@ struct ContentView: View {
                 }
             }
             .task(id: "\(shownY)-\(shownM)-\(eventDots)") { loadEvents() }
+            #if DEBUG
+            // 只在開發版：App Store 截圖用（模擬器啟動參數 -shot day|stats|patterns|note）
+            .onAppear {
+                let a = ProcessInfo.processInfo.arguments
+                guard let i = a.firstIndex(of: "-shot"), i + 1 < a.count else { return }
+                switch a[i + 1] {
+                case "day": editing = selected
+                case "stats": panel = .stats
+                case "patterns": panel = .patterns
+                case "note": panel = .notes
+                default: break
+                }
+            }
+            #endif
             .fileExporter(isPresented: Binding(get: { exportFile != nil }, set: { if !$0 { exportFile = nil } }),
                           document: exportFile, contentType: .zip,
                           defaultFilename: "小柯班表備份_\(Day.today.key).zip") { r in
