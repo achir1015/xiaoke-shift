@@ -68,9 +68,9 @@ struct ContentView: View {
                         Section {
                             Button("設定", systemImage: "gearshape") { panel = .settings }
                             Button("使用說明", systemImage: "questionmark.circle") { panel = .help }
-                            // 同麻將／象棋／跳棋：回到 GitHub Pages 安裝頁更新（資料會保留）
-                            Button("檢查更新（目前 v\(appVersion)）", systemImage: "arrow.down.circle") {
-                                if let u = URL(string: "https://achir1015.github.io/xiaoke-shift/ios/") { openURL(u) }
+                            // App Store 版：更新由 App Store 負責，這裡只顯示版本（審查不允許導到外部安裝頁）
+                            Button("關於（v\(appVersion)）", systemImage: "info.circle") {
+                                toast = "小柯班表助手 v\(appVersion)\n開發：吳玉柱 先生 與 Claude AI Opus 5.5\n更新請到 App Store。"
                             }
                         }
                     } label: { Image(systemName: "ellipsis.circle") }

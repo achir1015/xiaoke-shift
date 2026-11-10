@@ -7,7 +7,7 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     MARKETING_VERSION: "1.2.1"
-    CURRENT_PROJECT_VERSION: "4"
+    CURRENT_PROJECT_VERSION: "5"
 targets:
   XiaoKeShift:
     type: application
@@ -30,7 +30,7 @@ targets:
       properties:
         CFBundleDisplayName: 小柯班表
         CFBundleDevelopmentRegion: zh_TW
-        CFBundleShortVersionString: $(MARKETING_VERSION)   # App 內「檢查更新」顯示的版本
+        CFBundleShortVersionString: $(MARKETING_VERSION)   # App 內「關於」顯示的版本
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UIFileSharingEnabled: true          # 「檔案」App 看得到 data.json
@@ -40,6 +40,7 @@ targets:
         NSAlarmKitUsageDescription: 依照班別設定的時間叫你起床上班。
         NSPhotoLibraryUsageDescription: 在備註記錄插入照片。
         NSLocalNetworkUsageDescription: 讓同一個 Wi-Fi 的小柯機器人查詢班表（App 開著時）。
+        ITSAppUsesNonExemptEncryption: false        # 只用系統內建 HTTPS → 出口合規免申報
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         LSApplicationQueriesSchemes:
