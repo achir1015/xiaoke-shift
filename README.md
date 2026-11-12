@@ -14,20 +14,18 @@ https://github.com/user-attachments/assets/cb08328b-99ed-4308-8686-ba1c95cf4373
 3. 三星手機若被 Play Protect 擋下，選「仍要安裝」。
 4. 更新新版時直接安裝覆蓋即可，班表資料會保留（建議先「⋮ → 備份班表」）。
 
-## 📱 iPad／iPhone 安裝（和小柯麻將、象棋、跳棋相同）
+## 📱 iPad／iPhone 安裝：App Store 免費下載
 
-| 平台 | 安裝方式 |
-| --- | --- |
-| iPad／iPhone | `xiaoke-shift-ios.ipa`：用 **Safari** 開 [安裝頁](https://achir1015.github.io/xiaoke-shift/ios/) 按「安裝到這台 iPad／iPhone」（App Store 上架前限開發者登記過的裝置；第一次要在「設定 → 隱私權與安全性」開啟「開發者模式」） |
+**[⬇️ 到 App Store 下載「小柯班表助手」](https://apps.apple.com/tw/app/id6832798163)**　電腦上可用 iPad／iPhone 相機掃：
 
-**[⬇️ 開啟安裝頁](https://achir1015.github.io/xiaoke-shift/ios/)**　電腦上可用 iPad／iPhone 相機掃：
+<img src="docs/ios/appstore-qr.png" width="180" alt="iPad／iPhone 掃描打開 App Store">
 
-<img src="docs/ios/qr.png" width="160" alt="iPad／iPhone 掃描開啟安裝頁">
+1. 按上面的連結（或掃 QR Code、或在 App Store 搜尋「小柯班表助手」），按「**取得**」。
+2. 免費、不用開發者模式，任何 iPhone／iPad（iOS 17 以上）都能裝；新版本由 App Store **自動更新**。
+3. 之前用安裝頁 .ipa 裝的人：先「⋯ → 備份班表」存到「檔案」，刪掉舊 App，從 App Store 安裝後「⋯ → 還原班表」。
+4. 要分享給團隊：把 [這張圖](docs/ios/share-appstore.png) 傳到 LINE 群組，同事掃描就能安裝。
 
-1. 用 Safari 開安裝頁，按藍色的「安裝到這台 iPad／iPhone」，跳出視窗再按「安裝」（不用另外的 App）。
-2. 回到主畫面，等「小柯班表」圖示的進度跑完。
-3. 第一次打開若顯示「需要開發者模式」：「設定 → 隱私權與安全性」最下面打開「開發者模式」→ 重新啟動 → 開機後按「開啟」。每台裝置只要做一次。
-4. 以後有新版本：App 右上角「⋯ → 檢查更新」會回到安裝頁，再按一次安裝即可，資料會保留（建議先「⋯ → 備份班表」）。
+開發者登記過的測試裝置仍可用 [安裝頁](https://achir1015.github.io/xiaoke-shift/ios/) 的「安裝 .ipa 測試版」。
 
 - iPad 版：左邊大月曆、右邊當天說明卡，四個方向都可以，支援分割畫面；桌面可加「特大」月班表小工具。
 - 鬧鐘像「時鐘」App 一樣響需要 **iOS 26** 以上；較舊的 iOS 用通知提醒。

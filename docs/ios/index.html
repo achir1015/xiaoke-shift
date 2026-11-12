@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>安裝小柯班表助手（iPad／iPhone）</title>
+<meta name="apple-itunes-app" content="app-id=6832798163">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
   :root { --bg: #101522; --card: #1b2335; --fg: #eef2f7; --dim: #a9b6c8; --gold: #ffd166; --blue: #1e88e5; }
@@ -16,6 +17,7 @@
   .ver { color: var(--gold); margin: 0; }
   .install { margin-top: 22px; }
   a.btn { display: block; padding: 22px 16px; border-radius: 14px; background: var(--blue); color: #fff; font-size: 24px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 0 #0d5aa0; }
+  a.btn.adhoc { background: #3a4660; box-shadow: 0 4px 0 #262f42; font-size: 18px; padding: 14px 12px; }
   a.btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #0d5aa0; }
   a.sub { display: inline-block; margin-top: 14px; color: var(--dim); }
   .card { margin-top: 30px; padding: 18px 20px; background: var(--card); border-radius: 14px; text-align: left; }
@@ -35,9 +37,23 @@
     <img class="icon" src="icon-512.png" alt="小柯班表助手圖示">
     <div><h1>小柯班表助手</h1><p class="ver" id="ver">iPad／iPhone 版</p></div>
   </div>
-  <div class="pc">這一頁要在 <b>iPad／iPhone 的 Safari</b> 打開才能安裝。<br>用 iPad／iPhone 的相機掃這個 QR Code：<br><img src="qr.png" alt="安裝頁 QR Code"></div>
-  <div class="install"><a class="btn" href="itms-services://?action=download-manifest&amp;url=https://achir1015.github.io/xiaoke-shift/ios/manifest.plist">安裝到這台 iPad／iPhone</a>
-  <a class="sub" href="https://github.com/achir1015/xiaoke-shift/releases/latest/download/xiaoke-shift-ios.ipa">下載 .ipa 檔（給 Mac 的 Finder／Apple Configurator 用）</a></div>
+  <div class="pc">請用 <b>iPad／iPhone 的相機</b>掃這個 QR Code，會直接打開 App Store：<br><img src="appstore-qr.png" alt="App Store QR Code"></div>
+  <div class="install"><a class="btn" href="https://apps.apple.com/tw/app/id6832798163">到 App Store 免費下載</a>
+  <a class="sub" href="https://apps.apple.com/tw/app/id6832798163">或在 App Store 搜尋「小柯班表助手」</a></div>
+  <div class="card">
+    <h2>安裝步驟</h2>
+    <ol>
+      <li>按上面藍色的「到 App Store 免費下載」，在 App Store 按「取得」。</li>
+      <li>免費、不用開發者模式，任何 iPhone／iPad（iOS 17 以上）都能裝。</li>
+      <li>以後有新版本，App Store 會自動更新，班表、備註和設定都會保留。</li>
+      <li>之前用本頁 .ipa 安裝的人：先「⋯ → 備份班表」存到「檔案」，刪掉舊的 App，再從 App Store 安裝並「⋯ → 還原班表」。</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>開發者登記裝置（舊方式）</h2>
+    <p style="margin:0 0 12px">只有開發者登記過的裝置能用，第一次要開「開發者模式」。一般使用者請用上面的 App Store。</p>
+    <a class="btn adhoc" href="itms-services://?action=download-manifest&amp;url=https://achir1015.github.io/xiaoke-shift/ios/manifest.plist">安裝 .ipa 測試版</a>
+  </div>
   <div class="card">
     <h2>安裝步驟</h2>
     <ol>
@@ -47,10 +63,6 @@
       <li>第一次打開若顯示「需要開發者模式」：到「設定 → 隱私權與安全性」，拉到最下面打開「開發者模式」→ 按「重新啟動」→ 開機解鎖後在跳出的視窗按「開啟」並輸入密碼。每台裝置只要做一次。</li>
       <li>以後有新版本，在 App 右上角「⋯ → 檢查更新」就會回到這一頁更新，班表、備註和設定都會保留（建議先「⋯ → 備份班表」）。</li>
     </ol>
-  </div>
-  <div class="card">
-    <h2>可以安裝的裝置</h2>
-    <p style="margin:0">App Store 上架前，這個 .ipa 只能裝在開發者登記過的 iPad／iPhone 上；其他裝置按安裝會顯示「無法安裝」。</p>
   </div>
   <div class="card">
     <h2>iPad 版</h2>
@@ -65,7 +77,7 @@
   document.documentElement.className = ios ? 'is-ios' : 'is-pc';
   fetch('manifest.plist').then(function (r) { return r.text(); }).then(function (t) {
     var m = t.match(/<key>bundle-version<\/key>\s*<string>([^<]+)<\/string>/);
-    if (m) document.getElementById('ver').textContent = 'iPad／iPhone 版 v' + m[1];
+    if (m) document.getElementById('ver').textContent = 'iPad／iPhone 版 v' + m[1] + '・App Store 已上架';
   }).catch(function () {});
 </script>
 </body>
